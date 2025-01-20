@@ -1,4 +1,3 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -7,11 +6,11 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinX.serialization.plugin)
 }
 
 kotlin {
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
@@ -49,6 +48,9 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.compose)
             api(libs.multiplatformSettings.noArg)
             api(libs.multiplatformSettings.coroutines)
+            implementation(libs.androidx.navigation.compose)
+            implementation(libs.kotlinX.serializationJson)
+            implementation(libs.material3.window.size.multiplatform)
         }
     }
 }
