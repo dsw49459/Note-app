@@ -28,6 +28,7 @@ fun NoteDetailScreen(
     navController: NavController,
     viewModel: NoteDetailViewModel = koinViewModel()
 ) {
+    viewModel.loadNoteFromRepository(noteId)
     val state by viewModel.state.collectAsState()
 
     Scaffold(
@@ -35,7 +36,7 @@ fun NoteDetailScreen(
             FloatingActionButton(
                 onClick = {
                     navController.popBackStack()
-                    viewModel.saveNote()
+                    viewModel.saveNote(noteId)
                 },
                 backgroundColor = Color.Black
             ) {
@@ -56,7 +57,7 @@ fun NoteDetailScreen(
         ) {
             TransparentHintTextField(
                 text = state.noteTitle,
-                hint = "Enter a title...",
+                hint = "Dodaj tytuł...",
                 isHintVisible = state.isNoteTitleHintVisible,
                 onValueChanged = viewModel::onNoteTitleChanged,
                 onFocusChanged = {
@@ -68,7 +69,7 @@ fun NoteDetailScreen(
             Spacer(modifier = Modifier.height(16.dp))
             TransparentHintTextField(
                 text = state.noteContent,
-                hint = "Enter some content...",
+                hint = "Dodac treść...",
                 isHintVisible = state.isNoteContentHintVisible,
                 onValueChanged = viewModel::onNoteContentChanged,
                 onFocusChanged = {

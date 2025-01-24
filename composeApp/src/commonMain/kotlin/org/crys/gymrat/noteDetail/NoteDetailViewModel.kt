@@ -15,13 +15,9 @@ class NoteDetailViewModel(
 ) : ViewModel() {
 
     private val _noteTitle = MutableStateFlow("")
-
     private val _isNoteTitleFocused = MutableStateFlow(false)
-
     private val _noteContent = MutableStateFlow("")
-
     private val _isNoteContentFocused = MutableStateFlow(false)
-
     private val _noteColor = MutableStateFlow(Note.generateRandomColor())
 
     private val _state = combine(
@@ -42,22 +38,15 @@ class NoteDetailViewModel(
 
     val state = _state
 
-    private var existingNoteId: String = "id"
-
-    init {
+    fun loadNoteFromRepository(noteId: String) {
         viewModelScope.launch {
-            loadNoteFromRepository()
-        }
-    }
-
-    private suspend fun loadNoteFromRepository() {
-        existingNoteId.let { noteId ->
             val note = noteDataRepository.getNoteById(noteId)
             note?.let {
                 _noteTitle.value = it.title
                 _noteContent.value = it.content
-                _noteColor.value = 12L
+                _noteColor.value = note.color
             }
+
         }
     }
 
@@ -77,15 +66,15 @@ class NoteDetailViewModel(
         _isNoteContentFocused.value = isFocused
     }
 
-    fun saveNote() {
+    fun saveNote(noteId: String) {
         viewModelScope.launch {
             noteDataRepository.insertNote(
                 Note(
-                    id = existingNoteId,
+                    id = noteId,
                     title = _noteTitle.value,
                     content = _noteContent.value,
                     color = _noteColor.value,
-                    owner = "crys"
+                    owner = ""
                 )
             )
         }

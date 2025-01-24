@@ -40,9 +40,10 @@ class NoteDataRepositoryImpl(
     }
 
     override suspend fun insertNote(note: Note) {
+        val updatedNote = note.copy(owner = authRepository.getAccountRequest()!!.email)
         val response: HttpResponse = httpClient.post("$baseUrl/addNote") {
             contentType(ContentType.Application.Json)
-            setBody(note)
+            setBody(updatedNote)
             addAuthorizationHeader()
         }
         if (response.status != HttpStatusCode.OK) {

@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.benasher44.uuid.uuid4
 import org.crys.gymrat.auth.AuthScreen
 import org.crys.gymrat.noteDetail.NoteDetailScreen
 import org.crys.gymrat.noteList.NoteListScreen
@@ -30,7 +31,7 @@ fun AppNavHost(
         }
         composable<Destinations.AddNote> {
             NoteDetailScreen(
-                noteId = "15",
+                noteId = uuid4().toString(),
                 navController = navController
             )
         }

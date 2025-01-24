@@ -96,11 +96,11 @@ fun NoteListScreen(
             ) {
                 items(
                     items = state.notes,
-                    key = { it.id!! }
+                    key = { it.id }
                 ) { note ->
                     NoteItem(
                         note = note,
-                        backgroundColor = Color.Red,
+                        backgroundColor = Color(note.color),
                         onNoteClick = {
                             navController.navigate(Destinations.NoteDetail(note.id))
                         },
