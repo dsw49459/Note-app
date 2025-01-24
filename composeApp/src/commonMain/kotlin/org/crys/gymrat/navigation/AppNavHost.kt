@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import org.crys.gymrat.auth.AuthScreen
 import org.crys.gymrat.noteDetail.NoteDetailScreen
 import org.crys.gymrat.noteList.NoteListScreen
 
@@ -17,8 +18,11 @@ fun AppNavHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination =  Destinations.NoteList
+        startDestination =  Destinations.Register
     ) {
+        composable<Destinations.Register> {
+            AuthScreen()
+        }
         composable<Destinations.NoteList> {
             NoteListScreen(
                 navController = navController
