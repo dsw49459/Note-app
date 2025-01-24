@@ -1,14 +1,17 @@
 package org.crys.gymrat.noteDetail
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -26,18 +29,14 @@ fun NoteDetailScreen(
     viewModel: NoteDetailViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-    val hasNoteBeenSaved by viewModel.hasNoteBeenSaved.collectAsState()
-
-    LaunchedEffect(key1 = hasNoteBeenSaved) {
-        if(hasNoteBeenSaved) {
-            navController.popBackStack()
-        }
-    }
 
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = viewModel::saveNote,
+                onClick = {
+                    navController.popBackStack()
+                    viewModel.saveNote()
+                },
                 backgroundColor = Color.Black
             ) {
                 Icon(

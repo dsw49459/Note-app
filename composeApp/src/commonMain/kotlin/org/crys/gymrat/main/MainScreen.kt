@@ -6,11 +6,9 @@ import org.crys.gymrat.navigation.AppNavHost
 
 @Composable
 fun MainScreen(
-    navController: NavHostController,
-    onBoardingCompleted: Boolean,
+    navController: NavHostController
 ) {
     AppNavHost(
-        completedOnboarding = onBoardingCompleted,
         navController = navController
     )
 }

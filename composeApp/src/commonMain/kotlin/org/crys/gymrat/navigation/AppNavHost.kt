@@ -5,22 +5,35 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
+import org.crys.gymrat.noteDetail.NoteDetailScreen
 import org.crys.gymrat.noteList.NoteListScreen
-import org.crys.gymrat.onboarding.OnboardingScreen
 
 @Composable
 fun AppNavHost(
-    completedOnboarding: Boolean,
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = if (completedOnboarding) Destinations.Home else Destinations.Onboarding
+        startDestination =  Destinations.NoteList
     ) {
-        composable<Destinations.Onboarding> {
+        composable<Destinations.NoteList> {
             NoteListScreen(
+                navController = navController
+            )
+        }
+        composable<Destinations.AddNote> {
+            NoteDetailScreen(
+                noteId = 15L,
+                navController = navController
+            )
+        }
+        composable<Destinations.NoteDetail> { details ->
+            val noteId = details.toRoute<Destinations.NoteDetail>().noteId
+            NoteDetailScreen(
+                noteId = noteId,
                 navController = navController
             )
         }

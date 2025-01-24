@@ -18,8 +18,7 @@ fun GymRatApp(
         val navController = rememberNavController()
 
         MainScreen(
-            navController = navController,
-            onBoardingCompleted = false
+            navController = navController
         )
     }
 }

@@ -19,8 +19,11 @@ import kotlinx.serialization.Serializable
 
 sealed class Destinations {
     @Serializable
-    object Onboarding
+    object NoteList
 
     @Serializable
-    object Home
+    object AddNote
+
+    @Serializable
+    data class NoteDetail(val noteId: Long)
 }

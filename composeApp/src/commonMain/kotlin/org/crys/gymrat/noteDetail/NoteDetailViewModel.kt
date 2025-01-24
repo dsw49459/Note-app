@@ -1,33 +1,35 @@
 package org.crys.gymrat.noteDetail
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.crys.gymrat.noteList.model.Note
 import org.crys.gymrat.noteList.model.NoteDataRepository
 
 class NoteDetailViewModel(
-    private val noteDataRepository: NoteDataRepository,
-    private val savedStateHandle: SavedStateHandle
-): ViewModel() {
+    private val noteDataRepository: NoteDataRepository
+) : ViewModel() {
 
-    private val noteTitle = savedStateHandle.getStateFlow("noteTitle", "")
-    private val isNoteTitleFocused = savedStateHandle.getStateFlow("isNoteTitleFocused", false)
-    private val noteContent = savedStateHandle.getStateFlow("noteContent", "")
-    private val isNoteContentFocused = savedStateHandle.getStateFlow("isNoteContentFocused", false)
-    private val noteColor = savedStateHandle.getStateFlow(
-        "noteColor",
-        Note.generateRandomColor()
-    )
+    private val _noteTitle = MutableStateFlow("")
 
-    val state = combine(
-        noteTitle,
-        isNoteTitleFocused,
-        noteContent,
-        isNoteContentFocused,
-        noteColor
+    private val _isNoteTitleFocused = MutableStateFlow(false)
+
+    private val _noteContent = MutableStateFlow("")
+
+    private val _isNoteContentFocused = MutableStateFlow(false)
+
+    private val _noteColor = MutableStateFlow(Note.generateRandomColor())
+
+    private val _state = combine(
+        _noteTitle,
+        _isNoteTitleFocused,
+        _noteContent,
+        _isNoteContentFocused,
+        _noteColor
     ) { title, isTitleFocused, content, isContentFocused, color ->
         NoteDetailState(
             noteTitle = title,
@@ -38,41 +40,42 @@ class NoteDetailViewModel(
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NoteDetailState())
 
-    private val _hasNoteBeenSaved = MutableStateFlow(false)
-    val hasNoteBeenSaved = _hasNoteBeenSaved.asStateFlow()
+    val state = _state
 
-    private var existingNoteId: Long? = null
+    private var existingNoteId: Long? = 15
 
     init {
-        savedStateHandle.get<Long>("noteId")?.let { existingNoteId ->
-            if(existingNoteId == -1L) {
-                return@let
-            }
-            this.existingNoteId = existingNoteId
-            viewModelScope.launch {
-                noteDataRepository.getNoteById(existingNoteId)?.let { note ->
-                    savedStateHandle["noteTitle"] = note.title
-                    savedStateHandle["noteContent"] = note.content
-                    savedStateHandle["noteColor"] = note.colorHex
-                }
+        viewModelScope.launch {
+            loadNoteFromRepository()
+        }
+    }
+
+    private suspend fun loadNoteFromRepository() {
+        existingNoteId?.let { noteId ->
+            if (noteId == -1L) return
+            val note = noteDataRepository.getNoteById(noteId)
+            note?.let {
+                _noteTitle.value = it.title
+                _noteContent.value = it.content
+                _noteColor.value = it.colorHex
             }
         }
     }
 
     fun onNoteTitleChanged(text: String) {
-        savedStateHandle["noteTitle"] = text
+        _noteTitle.value = text
     }
 
     fun onNoteContentChanged(text: String) {
-        savedStateHandle["noteContent"] = text
+        _noteContent.value = text
     }
 
     fun onNoteTitleFocusChanged(isFocused: Boolean) {
-        savedStateHandle["isNoteTitleFocused"] = isFocused
+        _isNoteTitleFocused.value = isFocused
     }
 
     fun onNoteContentFocusChanged(isFocused: Boolean) {
-        savedStateHandle["isNoteContentFocused"] = isFocused
+        _isNoteContentFocused.value = isFocused
     }
 
     fun saveNote() {
@@ -80,12 +83,11 @@ class NoteDetailViewModel(
             noteDataRepository.insertNote(
                 Note(
                     id = existingNoteId,
-                    title = noteTitle.value,
-                    content = noteContent.value,
-                    colorHex = noteColor.value
+                    title = _noteTitle.value,
+                    content = _noteContent.value,
+                    colorHex = _noteColor.value
                 )
             )
-            _hasNoteBeenSaved.value = true
         }
     }
 }

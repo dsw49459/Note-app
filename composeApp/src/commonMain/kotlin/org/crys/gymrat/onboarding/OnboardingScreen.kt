@@ -6,7 +6,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
-import org.crys.gymrat.navigation.Destinations
 import org.crys.gymrat.utils.koinViewModel
 
 @Composable
@@ -33,10 +32,7 @@ fun OnboardingScreen(
             }
         },
         onClickGetStarted = {
-            viewModel.saveOnboardingData {
-                navController.popBackStack()
-                navController.navigate(Destinations.Home)
-            }
+
         },
     )
 }

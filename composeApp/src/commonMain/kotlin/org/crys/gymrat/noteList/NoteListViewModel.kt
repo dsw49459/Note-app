@@ -1,9 +1,11 @@
 package org.crys.gymrat.noteList
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -12,19 +14,19 @@ import org.crys.gymrat.noteList.model.NoteDataRepository
 import org.crys.gymrat.noteList.model.SearchNotes
 
 class NoteListViewModel(
-    private val noteDataRepository: NoteDataRepository,
-    private val savedStateHandle: SavedStateHandle
-): ViewModel() {
+    private val noteDataRepository: NoteDataRepository
+) : ViewModel() {
 
-    private val searchNotes = SearchNotes()
+    private val _notes = MutableStateFlow<List<Note>>(emptyList())
+    val notes = _notes.asStateFlow()
 
-    private val notes = savedStateHandle.getStateFlow("notes", emptyList<Note>())
-    private val searchText = savedStateHandle.getStateFlow("searchText", "")
-    private val isSearchActive = savedStateHandle.getStateFlow("isSearchActive", false)
+    private val _searchText = MutableStateFlow("")
 
-    val state = combine(notes, searchText, isSearchActive) { notes, searchText, isSearchActive ->
+    private val _isSearchActive = MutableStateFlow(false)
+
+    val state: StateFlow<NoteListState> = combine(_notes, _searchText, _isSearchActive) { notes, searchText, isSearchActive ->
         NoteListState(
-            notes = searchNotes.execute(notes, searchText),
+            notes = SearchNotes().execute(notes, searchText),
             searchText = searchText,
             isSearchActive = isSearchActive
         )
@@ -32,18 +34,19 @@ class NoteListViewModel(
 
     fun loadNotes() {
         viewModelScope.launch {
-            savedStateHandle["notes"] = noteDataRepository.getAllNotes()
+            val fetchedNotes = noteDataRepository.getAllNotes()
+            _notes.value = fetchedNotes
         }
     }
 
     fun onSearchTextChange(text: String) {
-        savedStateHandle["searchText"] = text
+        _searchText.value = text
     }
 
     fun onToggleSearch() {
-        savedStateHandle["isSearchActive"] = !isSearchActive.value
-        if(!isSearchActive.value) {
-            savedStateHandle["searchText"] = ""
+        _isSearchActive.value = !_isSearchActive.value
+        if (!_isSearchActive.value) {
+            _searchText.value = ""
         }
     }
 

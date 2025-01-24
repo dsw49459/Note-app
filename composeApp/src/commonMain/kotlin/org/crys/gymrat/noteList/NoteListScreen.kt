@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import org.crys.gymrat.navigation.Destinations
 import org.crys.gymrat.utils.koinViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -47,7 +48,7 @@ fun NoteListScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navController.navigate("note_detail/-1L")
+                    navController.navigate(Destinations.AddNote)
                 },
                 backgroundColor = Color.Black
             ) {
@@ -101,7 +102,7 @@ fun NoteListScreen(
                         note = note,
                         backgroundColor = Color(note.colorHex),
                         onNoteClick = {
-                            navController.navigate("note_detail/${note.id}")
+                            navController.navigate(Destinations.NoteDetail(note.id!!))
                         },
                         onDeleteClick = {
                             viewModel.deleteNoteById(note.id!!)
