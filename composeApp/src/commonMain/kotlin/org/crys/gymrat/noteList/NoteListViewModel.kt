@@ -50,7 +50,7 @@ class NoteListViewModel(
         }
     }
 
-    fun deleteNoteById(id: Long) {
+    fun deleteNoteById(id: String) {
         viewModelScope.launch {
             noteDataRepository.deleteNoteById(id)
             loadNotes()

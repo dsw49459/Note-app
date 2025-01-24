@@ -12,7 +12,8 @@ class AuthRepositoryImpl(
     private val httpClient: HttpClient
 ) : AuthRepository {
 
-    private val baseUrl = "http://10.0.2.2:8001" // Adres serwera
+    private val baseUrl = "http://10.0.2.2:8001"
+    private var accountRequest: AccountRequest? = null
 
     override suspend fun registerUser(email: String, password: String): SimpleResponse {
         val response: HttpResponse = httpClient.post("$baseUrl/register") {
@@ -32,9 +33,14 @@ class AuthRepositoryImpl(
             setBody(AccountRequest(email, password))
         }
         return if (response.status == HttpStatusCode.OK) {
+            accountRequest = AccountRequest(email, password)
             response.body()
         } else {
             SimpleResponse(false, "Login failed with status: ${response.status.value}")
         }
+    }
+
+    override fun getAccountRequest(): AccountRequest? {
+        return accountRequest
     }
 }

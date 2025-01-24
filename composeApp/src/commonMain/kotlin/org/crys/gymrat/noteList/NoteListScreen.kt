@@ -36,7 +36,7 @@ import org.crys.gymrat.utils.koinViewModel
 @Composable
 fun NoteListScreen(
     navController: NavController,
-    viewModel: NoteListViewModel = koinViewModel()
+    viewModel: NoteListViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -100,12 +100,12 @@ fun NoteListScreen(
                 ) { note ->
                     NoteItem(
                         note = note,
-                        backgroundColor = Color(note.colorHex),
+                        backgroundColor = Color.Red,
                         onNoteClick = {
-                            navController.navigate(Destinations.NoteDetail(note.id!!))
+                            navController.navigate(Destinations.NoteDetail(note.id))
                         },
                         onDeleteClick = {
-                            viewModel.deleteNoteById(note.id!!)
+                            viewModel.deleteNoteById(note.id)
                         },
                         modifier = Modifier
                             .fillMaxWidth()

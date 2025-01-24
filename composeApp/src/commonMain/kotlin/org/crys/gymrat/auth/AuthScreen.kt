@@ -31,7 +31,7 @@ import org.crys.gymrat.utils.koinViewModel
 
 @Composable
 fun AuthScreen(
-    navController: NavHostController, // Dodaj NavHostController jako argument
+    navController: NavHostController,
     viewModel: AuthViewModel = koinViewModel()
 ) {
     val authResult by viewModel.authResult.collectAsState()

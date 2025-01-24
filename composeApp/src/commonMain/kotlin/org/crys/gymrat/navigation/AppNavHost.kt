@@ -30,7 +30,7 @@ fun AppNavHost(
         }
         composable<Destinations.AddNote> {
             NoteDetailScreen(
-                noteId = 15L,
+                noteId = "15",
                 navController = navController
             )
         }

@@ -25,7 +25,7 @@ sealed class Destinations {
     object AddNote
 
     @Serializable
-    data class NoteDetail(val noteId: Long)
+    data class NoteDetail(val noteId: String)
 
     @Serializable
     object Auth

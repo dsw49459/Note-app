@@ -42,7 +42,7 @@ class NoteDetailViewModel(
 
     val state = _state
 
-    private var existingNoteId: Long = 15
+    private var existingNoteId: String = "id"
 
     init {
         viewModelScope.launch {
@@ -52,12 +52,11 @@ class NoteDetailViewModel(
 
     private suspend fun loadNoteFromRepository() {
         existingNoteId.let { noteId ->
-            if (noteId == -1L) return
             val note = noteDataRepository.getNoteById(noteId)
             note?.let {
                 _noteTitle.value = it.title
                 _noteContent.value = it.content
-                _noteColor.value = it.colorHex
+                _noteColor.value = 12L
             }
         }
     }
@@ -85,7 +84,8 @@ class NoteDetailViewModel(
                     id = existingNoteId,
                     title = _noteTitle.value,
                     content = _noteContent.value,
-                    colorHex = _noteColor.value
+                    color = _noteColor.value,
+                    owner = "crys"
                 )
             )
         }

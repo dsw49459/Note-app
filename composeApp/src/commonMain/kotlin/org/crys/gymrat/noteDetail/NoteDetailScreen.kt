@@ -24,7 +24,7 @@ import org.crys.gymrat.utils.koinViewModel
 
 @Composable
 fun NoteDetailScreen(
-    noteId: Long,
+    noteId: String,
     navController: NavController,
     viewModel: NoteDetailViewModel = koinViewModel()
 ) {
