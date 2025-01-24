@@ -9,15 +9,13 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
-import io.ktor.client.statement.request
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import org.crys.gymrat.api.DeleteNoteRequest
-import org.crys.gymrat.register.AuthRepository
 import io.ktor.util.encodeBase64
 import io.ktor.utils.io.core.toByteArray
+import org.crys.gymrat.api.DeleteNoteRequest
+import org.crys.gymrat.register.AuthRepository
 
 class NoteDataRepositoryImpl(
     private val httpClient: HttpClient,
