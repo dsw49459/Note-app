@@ -28,5 +28,5 @@ sealed class Destinations {
     data class NoteDetail(val noteId: Long)
 
     @Serializable
-    object Register
+    object Auth
 }

@@ -13,6 +13,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,14 +25,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import org.crys.gymrat.navigation.Destinations
 import org.crys.gymrat.utils.koinViewModel
 
 @Composable
-fun AuthScreen(viewModel: AuthViewModel = koinViewModel()) {
+fun AuthScreen(
+    navController: NavHostController, // Dodaj NavHostController jako argument
+    viewModel: AuthViewModel = koinViewModel()
+) {
     val authResult by viewModel.authResult.collectAsState()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isLoginMode by remember { mutableStateOf(true) }
+
+    LaunchedEffect(authResult) {
+        if (authResult?.successful == true) {
+            navController.navigate(Destinations.NoteList)
+        }
+    }
 
     Column(
         modifier = Modifier

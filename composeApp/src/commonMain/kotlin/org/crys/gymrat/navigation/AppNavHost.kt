@@ -18,10 +18,10 @@ fun AppNavHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination =  Destinations.Register
+        startDestination =  Destinations.Auth
     ) {
-        composable<Destinations.Register> {
-            AuthScreen()
+        composable<Destinations.Auth> {
+            AuthScreen(navController = navController)
         }
         composable<Destinations.NoteList> {
             NoteListScreen(
