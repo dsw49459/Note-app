@@ -34,6 +34,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+            implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
             implementation(libs.koin.core)
@@ -51,6 +52,12 @@ kotlin {
             implementation(libs.androidx.navigation.compose)
             implementation(libs.kotlinX.serializationJson)
             implementation(libs.material3.window.size.multiplatform)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
     }
 }

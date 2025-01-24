@@ -1,7 +1,7 @@
 package org.crys.gymrat.noteList.model
 
 data class Note(
-    val id: Long?,
+    val id: Long,
     val title: String,
     val content: String,
     val colorHex: Long

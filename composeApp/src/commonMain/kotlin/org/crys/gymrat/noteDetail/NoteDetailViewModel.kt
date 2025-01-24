@@ -42,7 +42,7 @@ class NoteDetailViewModel(
 
     val state = _state
 
-    private var existingNoteId: Long? = 15
+    private var existingNoteId: Long = 15
 
     init {
         viewModelScope.launch {
@@ -51,7 +51,7 @@ class NoteDetailViewModel(
     }
 
     private suspend fun loadNoteFromRepository() {
-        existingNoteId?.let { noteId ->
+        existingNoteId.let { noteId ->
             if (noteId == -1L) return
             val note = noteDataRepository.getNoteById(noteId)
             note?.let {
