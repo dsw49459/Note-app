@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinX.serialization.plugin)
+    alias(libs.plugins.room)
+    alias(libs.plugins.ksp) apply false
 }
 
 kotlin {
@@ -55,6 +57,7 @@ kotlin {
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.uuid)
+            implementation(libs.androidx.room.runtime)
 
         }
         iosMain.dependencies {
@@ -94,3 +97,6 @@ dependencies {
     debugImplementation(compose.uiTooling)
 }
 
+room {
+    schemaDirectory("$projectDir/schemas")
+}
