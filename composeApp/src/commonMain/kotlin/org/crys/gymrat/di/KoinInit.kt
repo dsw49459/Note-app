@@ -9,8 +9,9 @@ class KoinInit {
         return startKoin {
             modules(
                 listOf(
+                    databaseModule,
                     commonModule(),
-                    viewModelModule,
+                    viewModelModule
                 ),
             )
             appDeclaration()
