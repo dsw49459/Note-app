@@ -11,5 +11,5 @@ import org.koin.dsl.module
 fun commonModule() = module {
     single<HttpClient> { createHttpClient() }
     single<AuthRepository> { AuthRepositoryImpl(get()) }
-    single<NoteDataRepository> { NoteDataRepositoryImpl(get(), get()) }
+    single<NoteDataRepository> { NoteDataRepositoryImpl(get(), get(), get()) }
 }
