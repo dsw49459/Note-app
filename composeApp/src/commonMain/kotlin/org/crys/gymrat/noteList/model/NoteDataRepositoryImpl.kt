@@ -15,11 +15,13 @@ import io.ktor.http.contentType
 import io.ktor.util.encodeBase64
 import io.ktor.utils.io.core.toByteArray
 import org.crys.gymrat.api.DeleteNoteRequest
+import org.crys.gymrat.db.NoteDao
 import org.crys.gymrat.register.AuthRepository
 
 class NoteDataRepositoryImpl(
     private val httpClient: HttpClient,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val noteDao: NoteDao
 ) : NoteDataRepository {
 
     private val baseUrl = "http://10.0.2.2:8001"
@@ -39,27 +41,30 @@ class NoteDataRepositoryImpl(
 
     override suspend fun insertNote(note: Note) {
         val updatedNote = note.copy(owner = authRepository.getAccountRequest()!!.email)
-        val response: HttpResponse = httpClient.post("$baseUrl/addNote") {
-            contentType(ContentType.Application.Json)
-            setBody(updatedNote)
-            addAuthorizationHeader()
-        }
-        if (response.status != HttpStatusCode.OK) {
-            throw Exception("Failed to insert note: ${response.status.description}")
+        try {
+            val response: HttpResponse = httpClient.post("$baseUrl/addNote") {
+                contentType(ContentType.Application.Json)
+                setBody(updatedNote)
+                addAuthorizationHeader()
+            }
+            if (response.status == HttpStatusCode.OK) {
+                // sukces – zapisujemy lokalnie jako zsynchronizowaną
+                noteDao.insert(updatedNote.copy(isSynchronized = true).toEntity())
+            } else {
+                // błąd z backendu – zapisujemy lokalnie jako niezsynchronizowaną
+                noteDao.insert(updatedNote.copy(isSynchronized = false).toEntity())
+            }
+        } catch (e: Exception) {
+            // brak internetu, timeout, etc.
+            noteDao.insert(updatedNote.copy(isSynchronized = false).toEntity())
         }
     }
 
+
     override suspend fun getNoteById(id: String): Note? {
-        val response: HttpResponse = httpClient.get("$baseUrl/getNoteById") {
-            parameter("id", id)
-            addAuthorizationHeader()
-        }
-        return if (response.status == HttpStatusCode.OK) {
-            response.body()
-        } else {
-            null
-        }
+        return noteDao.getById(id)?.toNote(authRepository.getAccountRequest()!!.email)
     }
+
 
     override suspend fun getAllNotes(): List<Note> {
         val response: HttpResponse = httpClient.get("$baseUrl/getNotes") {
@@ -70,13 +75,39 @@ class NoteDataRepositoryImpl(
     }
 
     override suspend fun deleteNoteById(id: String) {
-        val response: HttpResponse = httpClient.post("$baseUrl/deleteNote") {
-            contentType(ContentType.Application.Json)
-            setBody(DeleteNoteRequest(id))
-            addAuthorizationHeader()
+        try {
+            val response: HttpResponse = httpClient.post("$baseUrl/deleteNote") {
+                contentType(ContentType.Application.Json)
+                setBody(DeleteNoteRequest(id))
+                addAuthorizationHeader()
+            }
+            if (response.status != HttpStatusCode.OK) {
+                throw Exception("Backend error: ${response.status.description}")
+            }
+        } catch (e: Exception) {
+            // remove exception
+        } finally {
+            noteDao.deleteById(id)
         }
-        if (response.status != HttpStatusCode.OK) {
-            throw Exception("Failed to delete note: ${response.status.description}")
+    }
+
+
+    override suspend fun syncNotesWithBackend() {
+        val unsyncedNotes = noteDao.getAll().filter { !it.isSynchronized }
+        for (noteEntity in unsyncedNotes) {
+            val note = noteEntity.toNote(authRepository.getAccountRequest()!!.email)
+            try {
+                val response = httpClient.post("$baseUrl/addNote") {
+                    contentType(ContentType.Application.Json)
+                    setBody(note.copy(owner = authRepository.getAccountRequest()!!.email))
+                    addAuthorizationHeader()
+                }
+                if (response.status == HttpStatusCode.OK) {
+                    noteDao.insert(note.copy(isSynchronized = true).toEntity())
+                }
+            } catch (_: Exception) {
+                // brak internetu, ignorujemy
+            }
         }
     }
 }

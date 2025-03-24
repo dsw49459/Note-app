@@ -5,4 +5,5 @@ interface NoteDataRepository {
     suspend fun getNoteById(id: String): Note?
     suspend fun getAllNotes(): List<Note>
     suspend fun deleteNoteById(id: String)
+    suspend fun syncNotesWithBackend()
 }
